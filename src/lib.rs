@@ -1,7 +1,7 @@
 use serde_json;
 
 use rayon::prelude::*;
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, path::PathBuf, fs::read_to_string};
 
 pub const NUM_LETTERS: usize = 5;
 
@@ -167,9 +167,9 @@ pub fn words_consistent(words: Vec<(Word, WordMask)>, pat: Pattern, guess: Word)
        |(w, wm)| pattern_consistent(guess, pat, *w, *wm)
     ).collect()
 }
-pub fn load() -> Vec<Word> {
-    let s = include_str!("../words.json");
-    let json: serde_json::Value = serde_json::from_str(s).unwrap();
+pub fn load(path: PathBuf) -> Vec<Word> {
+    let s = read_to_string(path).unwrap();
+    let json: serde_json::Value = serde_json::from_str(&s).unwrap();
     let arr = json.as_array().unwrap();
     let mut v = Vec::with_capacity(arr.len());
     for val in arr {
@@ -255,7 +255,7 @@ struct BestDat {
 pub fn compute_best_word(all_words: &Vec<(Word, WordMask)>, possible_words: &Vec<(Word, WordMask)>) -> Word {
 
     let n_words = all_words.len();
-    let best_dat = Arc::new(Mutex::new(BestDat {word: str_to_word("none"), score: n_words}));
+    let best_dat = Arc::new(Mutex::new(BestDat {word: str_to_word("none"), score: usize::MAX}));
     (0..n_words).into_par_iter().for_each(|i| {
         let (guess, _) = all_words[i];
         let mut narrow = 0;
