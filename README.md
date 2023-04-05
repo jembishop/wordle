@@ -15,3 +15,5 @@ rather than following the suggested word, its normally
 pretty obvious what it is.
 
 It doesn't handle hard mode.
+
+![](https://github.com/jembishop/wordle/blob/main/screenshot.png)
